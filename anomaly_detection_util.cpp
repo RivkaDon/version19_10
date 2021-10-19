@@ -4,7 +4,7 @@
 
 //calculates average of values in x
 float avg(float* x, int size) {
-    if (x == NULL)
+    if (x == nullptr)
         return 0;
     if (size == 0)
         return 0;
@@ -19,7 +19,7 @@ float avg(float* x, int size) {
 float var(float* x, int size){
     if (size == 0)
         return 0;
-    if (x == NULL)
+    if (x == nullptr)
         return 0;
     float sum = 0.0;
     float u = avg(x, size);
@@ -31,6 +31,8 @@ float var(float* x, int size){
 }
 // returns the covariance of X and Y
 float cov(float* x,  float* y, int size) {
+    if ((x == nullptr) || (y == nullptr) || (size == 0))
+            return 0;
     int i;
     float mult = 0.0;
     for (i = 0; i < size; i++) {
@@ -43,12 +45,20 @@ float cov(float* x,  float* y, int size) {
 }
 // returns the Pearson correlation coefficient of X and Y
 float pearson(float* x, float* y, int size) {
+    if ((x == nullptr) || (y == nullptr) || (size == 0))
+        return 0;
     float vx = sqrt(var(x, size));
     float vy = sqrt(var(y, size));
+    if ((vx == 0) || (vy == 0))
+        return 0;
     return cov(x, y, size) / (vx * vy);
 }
 // performs a linear regression and returns the line equation
 Line linear_reg(Point** points, int size) {
+    if (points == nullptr) {
+        Line *line = new Line(0, 0);
+        return *line;
+    }
     Point* looping = *points;
     float a = 0.0, b = 0.0;
     float* x = new float[size] ;
@@ -65,12 +75,17 @@ Line linear_reg(Point** points, int size) {
 }
 // returns the deviation between point p and the line equation of the points
 float dev(Point p,Point** points, int size) {
+    if (points == nullptr)
+        return 0;
     Line l = linear_reg(points,size);
-    return abs((l.a*p.x + l.b) - p.y);
+    return dev(p, l);
 }
 // returns the deviation between point p and the line
 float dev(Point p,Line l) {
-    return abs((l.a*p.x + l.b) - p.y);
+    float num = l.a*p.x + l.b - p.y;
+    if (num < 0)
+        return p.y - l.a*p.x + l.b;
+    return num;
 }
 //int main()
 //{
