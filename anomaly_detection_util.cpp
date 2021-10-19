@@ -1,3 +1,5 @@
+// Hodaya Raz and Rivka Doniger
+
 #include <iostream>
 #include "anomaly_detection_util.h"
 #include "math.h"
