@@ -1,4 +1,4 @@
-// Hodaya Raz and Rivka Doniger
+// Hodaya Raz 211540174, Rivka Doniger 324584531
 
 #include <iostream>
 #include "anomaly_detection_util.h"
