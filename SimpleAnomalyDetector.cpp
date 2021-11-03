@@ -3,6 +3,7 @@
 
 SimpleAnomalyDetector::SimpleAnomalyDetector() {
 
+
     // TODO Auto-generated constructor stub
 
 }
