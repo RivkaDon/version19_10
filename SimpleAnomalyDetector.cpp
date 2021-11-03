@@ -2,8 +2,6 @@
 #include "SimpleAnomalyDetector.h"
 
 SimpleAnomalyDetector::SimpleAnomalyDetector() {
-
-
     // TODO Auto-generated constructor stub
 
 }
