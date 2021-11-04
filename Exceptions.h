@@ -1,0 +1,8 @@
+//
+// Created by rivka on 04/11/2021.
+//
+
+#ifndef VERSION18_10_EXCEPTIONS_H
+#define VERSION18_10_EXCEPTIONS_H
+
+#endif //VERSION18_10_EXCEPTIONS_H
