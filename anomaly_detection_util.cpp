@@ -7,9 +7,9 @@
 //calculates average of values in x
 float avg(float* x, int size) {
     if (x == nullptr)
-        return 0;
+        throw std::runtime_error("null pointer error");
     if (size == 0)
-        return 0;
+        throw std::runtime_error("no input data");
     float u = 0.0;
     for (int i = 0; i < size; i++) {
         u += x[i];
@@ -20,9 +20,9 @@ float avg(float* x, int size) {
 // returns the variance of X and Y
 float var(float* x, int size){
     if (size == 0)
-        return 0;
+        throw std::runtime_error("no input data");
     if (x == nullptr)
-        return 0;
+        throw std::runtime_error("null pointer error");
     float sum = 0.0;
     float u = avg(x, size);
     for (int i = 0; i < size; i++) {
@@ -33,8 +33,10 @@ float var(float* x, int size){
 }
 // returns the covariance of X and Y
 float cov(float* x,  float* y, int size) {
-    if ((x == nullptr) || (y == nullptr) || (size == 0))
-            return 0;
+    if ((x == nullptr) || (y == nullptr))
+        throw std::runtime_error("null pointer error");
+    if (size == 0)
+        throw std::runtime_error("no input data");
     int i;
     float mult = 0.0;
     for (i = 0; i < size; i++) {
@@ -47,8 +49,10 @@ float cov(float* x,  float* y, int size) {
 }
 // returns the Pearson correlation coefficient of X and Y
 float pearson(float* x, float* y, int size) {
-    if ((x == nullptr) || (y == nullptr) || (size == 0))
-        return 0;
+    if ((x == nullptr) || (y == nullptr))
+        throw std::runtime_error("null pointer error");
+    if (size == 0)
+        throw std::runtime_error("no input data");
     float vx = sqrt(var(x, size));
     float vy = sqrt(var(y, size));
     if ((vx == 0) || (vy == 0))
@@ -78,7 +82,7 @@ Line linear_reg(Point** points, int size) {
 // returns the deviation between point p and the line equation of the points
 float dev(Point p,Point** points, int size) {
     if (points == nullptr)
-        return 0;
+        throw std::runtime_error("null pointer error");
     Line l = linear_reg(points,size);
     return dev(p, l);
 }
