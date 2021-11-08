@@ -51,6 +51,13 @@ public:
             }
         }
     }
+    const vector<pair<string, vector<float>>>& getFeatures() const{
+        return features;
+    }
+
+    string getFeatureName (int colm) {
+        return features.at(colm).first;
+    }
 
 };
 

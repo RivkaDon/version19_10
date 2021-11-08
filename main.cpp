@@ -71,8 +71,8 @@ int main(){
     generateTrainCSV(a1,b1,a2,b2);
     TimeSeries ts("trainFile1.csv");
 
-//    SimpleAnomalyDetector ad;
-//    ad.learnNormal(ts);
+    SimpleAnomalyDetector ad;
+    ad.learnNormal(ts);
 //    vector<correlatedFeatures> cf=ad.getNormalModel();
 //
 //    if(cf.size()!=2)
