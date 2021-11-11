@@ -44,12 +44,12 @@ public:
             }
         }
         dataFile.close();
-        for (int i = 0; i < features.size(); i++) {
-            cout << features.at(i).first << endl;
-            for (int j = 0; j < features.at(i).second.size(); j++) {
-                cout << features.at(i).second.at(j) << endl;
-            }
-        }
+//        for (int i = 0; i < features.size(); i++) {
+//            cout << features.at(i).first << endl;
+//            for (int j = 0; j < features.at(i).second.size(); j++) {
+//                cout << features.at(i).second.at(j) << endl;
+//            }
+//        }
     }
     const vector<pair<string, vector<float>>>& getFeatures() const{
         return features;
