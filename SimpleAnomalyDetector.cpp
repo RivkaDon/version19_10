@@ -1,6 +1,8 @@
+// Hodaya Raz 211540174, Rivka Doniger 324584531
 #include "anomaly_detection_util.h"
 #include "SimpleAnomalyDetector.h"
-#include <string.h>
+#include <iostream>
+#include <vector>
 SimpleAnomalyDetector::SimpleAnomalyDetector(){
 
 }
@@ -8,7 +10,6 @@ SimpleAnomalyDetector::SimpleAnomalyDetector(){
 SimpleAnomalyDetector::~SimpleAnomalyDetector() {
 	// TODO Auto-generated destructor stub
 }
-
 
 void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
     int c;
@@ -22,6 +23,8 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
         float arri[ts.getFeatures().at(i).second.size()];
         std::copy(ts.getFeatures().at(i).second.begin(), ts.getFeatures().at(i).second.end(), arri);
         float* arrip = arri;
+        // copy of data in features in collum i
+        std::vector<float> vi(ts.getFeatures().at(i).second);
         for (int j = i + 1; j < ts.getFeatures().size(); j++) {
             // create array of data in j collum
             float arrj[ts.getFeatures().at(j).second.size()];
@@ -38,28 +41,31 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
         }
         // if c equals -1 so has no correlative feature
         if (c!= -1) {
+            // copy of data in features in collum c
+            std::vector<float> vc(ts.getFeatures().at(c).second);
             correlatedFeatures corrf;
             corrf.feature1 = ts.getFeatures().at(i).first;
             corrf.feature2 = ts.getFeatures().at(c).first;
-            cout<< corrf.feature1 << "      " << corrf.feature2<<endl;
             corrf.corrlation = m;
-            Point **arrPoint[ts.getFeatures().at(i).second.size()];
-            // creates an array of pointers to Points using the data of the correlative features
-            for (int k = 0; k < ts.getFeatures().at(i).second.size(); k++) {
-                Point p(ts.getFeatures().at(i).second.at(k), ts.getFeatures().at(c).second.at(k));
-                Point *t = &p;
-                arrPoint[k] = &t;
+            // creates an array of pointers to Points using the data of the correlative features.
+            Point** arrPoint = new Point*[ts.getFeatures().at(i).second.size()];
+            for(int k = 0; k < ts.getFeatures().at(i).second.size(); k++) {
+                arrPoint[k] = new Point(vi[k], vc[k]);
             }
-            corrf.lin_reg = linear_reg(*arrPoint, ts.getFeatures().at(i).second.size());
+            corrf.lin_reg = linear_reg(arrPoint, ts.getFeatures().at(i).second.size());
             // calculates the highest threshold
             for (int l = 0; l < ts.getFeatures().at(i).second.size(); l++) {
-                if (dev(*(*arrPoint[l]), corrf.lin_reg) > maxT)
-                    maxT = dev(*(*arrPoint[l]), corrf.lin_reg);
-                //cout << dev(**arrPoint[l], corrf.lin_reg) << "%%%%%%"<<endl;
+                float d = abs(arrPoint[l]->y - corrf.lin_reg.f(arrPoint[l]->x));
+                if (d > maxT)
+                    maxT = d;
             }
-            corrf.threshold = maxT;
+            corrf.threshold = 1.1 * maxT;
             // adds correlative feature to the vector cf
             cf.push_back(corrf);
+            // delete points
+            for(size_t k=0;k<ts.getFeatures().at(i).second.size();k++)
+                delete arrPoint[k];
+            delete[] arrPoint;
         }
     }
 }
@@ -73,33 +79,28 @@ int getFeatureCollum(string feature, const TimeSeries& ts) {
     throw std::runtime_error("feature not found");
 }
 vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
-    int colFeature1, colFeature2, x, y, distance;
+    int colFeature1, colFeature2;
+    float x, y, distance;
     vector<AnomalyReport> anomalies;
-    // to know how many correlations we need to check
-    int sizeOfCorrelations = cf.size();
-//    cout << getFeatureCollum("B", ts) << endl;
-    // go over all features
-    // the number of row.
-    for (int i = 0; i < ts.getFeatures().at(0).second.size(); i++) {
-        // go over correlation vector
+    int sizeOfPointVector = ts.getFeatures().at(0).second.size();
+    // go over all rows in the vector in the correlated features data
+    for (int i = 0; i < sizeOfPointVector; i++) {
+        // go over correlations vector
         for (int j = 0; j < cf.size() ; j++) {
             colFeature1 = getFeatureCollum(cf.at(j).feature1, ts);
             colFeature2 = getFeatureCollum(cf.at(j).feature2, ts);
             x = ts.getFeatures().at(colFeature1).second.at(i);
             y = ts.getFeatures().at(colFeature2).second.at(i);
-            Point p(x, y);
-            distance = dev(p, cf.at(j).lin_reg);
-            cout<< "cf.at(j).threshold   " << cf.at(j).threshold << endl;
-            cout<< "distance    " << distance << endl;
+            // checks the distance between the point and the linear reg
+            distance = abs(y - cf.at(j).lin_reg.f(x));
+            // if there is an anomaly
             if (distance > cf.at(j).threshold) {
-                cout<< "cf.at(j).threshold" << cf.at(j).threshold << endl;
-                cout<< "distance" << distance << endl;
-                AnomalyReport ar(cf.at(j).feature1 + "-" + cf.at(j).feature2,i);
-                cout<< "********" << cf.at(j).feature1 + "-" + cf.at(j).feature2 << endl;
+                AnomalyReport ar(cf.at(j).feature1 + "-" + cf.at(j).feature2, i + 1);
                 anomalies.push_back(ar);
             }
         }
     }
     return anomalies;
 }
+
 

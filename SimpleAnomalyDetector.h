@@ -1,8 +1,7 @@
-
+// Hodaya Raz 211540174, Rivka Doniger 324584531
 
 #ifndef SIMPLEANOMALYDETECTOR_H_
 #define SIMPLEANOMALYDETECTOR_H_
-
 #include "anomaly_detection_util.h"
 #include "AnomalyDetector.h"
 #include <vector>
@@ -26,6 +25,7 @@ public:
 
 	virtual void learnNormal(const TimeSeries& ts);
 	virtual vector<AnomalyReport> detect(const TimeSeries& ts);
+    Point** createPointsArr(vector<float> &x, vector<float> &y, int size);
 
 	vector<correlatedFeatures> getNormalModel(){
 		return cf;
