@@ -12,12 +12,18 @@ SimpleAnomalyDetector::~SimpleAnomalyDetector() {
 }
 
 void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
+    float m = 0.9;
+    learnNormalHelper(ts, m);
+}
+
+// learn normal for m given
+void SimpleAnomalyDetector::learnNormalHelper(const TimeSeries& ts, float m1) {
     int c;
-    float p, m;
+    float p;
+    float m = m1;
     float maxT = 0; // holding the highest threshold.
     // find the correlation for each feature
     for (int i = 0; i < ts.getFeatures().size(); i++) {
-        m = 0.9;
         c = -1;
         // create array of data in i collum
         float arri[ts.getFeatures().at(i).second.size()];
@@ -53,12 +59,9 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
                 arrPoint[k] = new Point(vi[k], vc[k]);
             }
             corrf.lin_reg = linear_reg(arrPoint, ts.getFeatures().at(i).second.size());
+            corrf.min_Circle = findMinCircle(arrPoint, ts.getFeatures().at(i).second.size());
             // calculates the highest threshold
-            for (int l = 0; l < ts.getFeatures().at(i).second.size(); l++) {
-                float d = abs(arrPoint[l]->y - corrf.lin_reg.f(arrPoint[l]->x));
-                if (d > maxT)
-                    maxT = d;
-            }
+            maxT = sendToCalcThreshold(corrf, ts.getFeatures().at(i).second.size(), arrPoint);
             corrf.threshold = 1.1 * maxT;
             // adds correlative feature to the vector cf
             cf.push_back(corrf);
@@ -66,9 +69,25 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             for(size_t k=0;k<ts.getFeatures().at(i).second.size();k++)
                 delete arrPoint[k];
             delete[] arrPoint;
+            m = m1;
         }
     }
 }
+
+float calculateThreshold(Line linReg, int size, Point** arrPoint) {
+    float maxT = 0;
+    for (int l = 0; l < size; l++) {
+        float d = abs(arrPoint[l]->y - linReg.f(arrPoint[l]->x));
+        if (d > maxT)
+            maxT = d;
+    }
+    return maxT;
+}
+
+float SimpleAnomalyDetector::sendToCalcThreshold(correlatedFeatures corf, int size, Point** arrPoint) {
+    return calculateThreshold(corf.lin_reg, size, arrPoint);
+}
+
 // receives a string and time series and returns the collum of the string in ts
 int getFeatureCollum(string feature, const TimeSeries& ts) {
     for (int i = 0; i < ts.getFeatures().size(); i++) {
@@ -78,6 +97,13 @@ int getFeatureCollum(string feature, const TimeSeries& ts) {
     }
     throw std::runtime_error("feature not found");
 }
+
+// calculates distance between line and point
+float SimpleAnomalyDetector::calculateDistance(correlatedFeatures cf, float x, float y) {
+    return abs(y - cf.lin_reg.f(x));
+}
+
+
 vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     int colFeature1, colFeature2;
     float x, y, distance;
@@ -92,7 +118,7 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
             x = ts.getFeatures().at(colFeature1).second.at(i);
             y = ts.getFeatures().at(colFeature2).second.at(i);
             // checks the distance between the point and the linear reg
-            distance = abs(y - cf.at(j).lin_reg.f(x));
+            distance = calculateDistance(cf.at(j), x, y);
             // if there is an anomaly
             if (distance > cf.at(j).threshold) {
                 AnomalyReport ar(cf.at(j).feature1 + "-" + cf.at(j).feature2, i + 1);
@@ -102,5 +128,6 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     }
     return anomalies;
 }
+
 
 

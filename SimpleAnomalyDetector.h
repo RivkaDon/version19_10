@@ -3,6 +3,7 @@
 #ifndef SIMPLEANOMALYDETECTOR_H_
 #define SIMPLEANOMALYDETECTOR_H_
 #include "anomaly_detection_util.h"
+#include "minCircle.h"
 #include "AnomalyDetector.h"
 #include <vector>
 #include <algorithm>
@@ -13,6 +14,7 @@ struct correlatedFeatures{
 	string feature1,feature2;  // names of the correlated features
 	float corrlation;
 	Line lin_reg;
+    Circle min_Circle;
 	float threshold;
 };
 
@@ -25,6 +27,9 @@ public:
 
 	virtual void learnNormal(const TimeSeries& ts);
 	virtual vector<AnomalyReport> detect(const TimeSeries& ts);
+    virtual void learnNormalHelper(const TimeSeries& ts, float m);
+    virtual float sendToCalcThreshold(correlatedFeatures corf, int size, Point** arrPoint);
+    virtual float calculateDistance(correlatedFeatures cf, float x, float y);
     Point** createPointsArr(vector<float> &x, vector<float> &y, int size);
 
 	vector<correlatedFeatures> getNormalModel(){
