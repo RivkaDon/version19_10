@@ -202,13 +202,7 @@ public:
             while (itAnomaly->second < itReport->first) {
                 FP++;
                 break;
-                //if (itAnomaly == startAndEndAnomaly.end()) {
-                   // while (itReport != startAndEndReport.end()) {
-                   //    FP++;
-                    //}
-                //}
             }
-
             // anomaly starts in the middle of report
             if ( itAnomaly->first <= itReport->first && itAnomaly->second >= itReport->first ) {
                 itReport++;
@@ -219,13 +213,11 @@ public:
                 itReport++;
                 TP++;
             }
-
             // anomaly included in the middle of report
             else if ( itAnomaly->first >= itReport->first && itAnomaly->second <= itReport->second ) {
                 itReport++;
                 TP++;
             }
-
             // report included in the middle of anomaly
             else if ( itAnomaly->first <= itReport->first && itAnomaly->second >= itReport->second ) {
                 itReport++;
@@ -241,8 +233,6 @@ public:
         dio->write("Upload complete.\n");
         float truePositiveRate=((int)(1000.0*TP/reportCounter))/1000.0f;
         float falseAlarmRate=((int)(1000.0*FP/N))/1000.0f;
-//        float truePositiveRate = TP / reportCounter;
-//        float falseAlarmRate = FP/N;
         dio->write("True Positive Rate: ");
         dio->write(truePositiveRate);
         dio->write("\n");
