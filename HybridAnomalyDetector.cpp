@@ -18,14 +18,14 @@ void HybridAnomalyDetector::learnNormal(const TimeSeries &ts) {
 }
 
 float HybridAnomalyDetector::sendToCalcThreshold(correlatedFeatures corf, int size, Point **arrPoint) {
-    if (corf.corrlation >= 0.9) {
+    if (corf.corrlation >= threshold) {
         return SimpleAnomalyDetector::sendToCalcThreshold(corf, size, arrPoint);
     }
     return corf.min_Circle.radius;
 }
 
 float HybridAnomalyDetector::calculateDistance(correlatedFeatures cf, float x, float y) {
-    if (cf.corrlation >= 0.9) {
+    if (cf.corrlation >= threshold) {
         return SimpleAnomalyDetector::calculateDistance(cf, x, y);
     }
     return sqrt( pow((cf.min_Circle.center.x - x),2) + pow((cf.min_Circle.center.y - y), 2));

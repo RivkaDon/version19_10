@@ -12,8 +12,7 @@ SimpleAnomalyDetector::~SimpleAnomalyDetector() {
 }
 
 void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
-    float m = 0.9;
-    learnNormalHelper(ts, m);
+    learnNormalHelper(ts, threshold);
 }
 
 // learn normal for m given
@@ -127,6 +126,10 @@ vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
         }
     }
     return anomalies;
+}
+
+void SimpleAnomalyDetector::setThreshold(float num) {
+    threshold = num;
 }
 
 

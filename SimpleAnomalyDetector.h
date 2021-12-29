@@ -20,7 +20,9 @@ struct correlatedFeatures{
 
 
 class SimpleAnomalyDetector:public TimeSeriesAnomalyDetector{
-	vector<correlatedFeatures> cf;
+protected:
+    vector<correlatedFeatures> cf;
+    float threshold = 0.9;
 public:
 	SimpleAnomalyDetector();
 	virtual ~SimpleAnomalyDetector();
@@ -31,6 +33,7 @@ public:
     virtual float sendToCalcThreshold(correlatedFeatures corf, int size, Point** arrPoint);
     virtual float calculateDistance(correlatedFeatures cf, float x, float y);
     Point** createPointsArr(vector<float> &x, vector<float> &y, int size);
+    void setThreshold(float num);
 
 	vector<correlatedFeatures> getNormalModel(){
 		return cf;
