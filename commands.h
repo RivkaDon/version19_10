@@ -32,7 +32,7 @@ public:
         CT->lineCount = -1;
         ofstream out(fileName);
         string s="";
-        while((s=read())!="done"){
+        while((s=read())!="done\n"){
             out<<s<<endl;
             CT->lineCount++;
         }
@@ -40,33 +40,6 @@ public:
     }
 };
 
-//class StandardIO:public DefaultIO {
-//public:
-//    StandardIO();
-//    virtual ~StandardIO();
-//    virtual string read() {
-//        string str;
-//        cin >> str;
-//        return str;
-//    }
-//
-//    virtual void write(string text) {
-//        cout << text << endl;
-//    }
-//
-//    virtual void write(float f) {
-//        cout << f << endl;
-//    }
-//
-//    virtual void read(float* f) {
-//        cin >> *f;
-//    }
-//};
-
-// you may add here helper classes
-
-
-// you may edit this class
 class Command{
 protected:
     DefaultIO* dio;
@@ -171,7 +144,7 @@ public:
             startAndEndAnomaly.push_back(make_pair(start, end));
         }
         // inserts the reports into vector
-        while((s = dio->read())!="done") {
+        while((s = dio->read())!="done\n") {
             // extracting the anomaly report start time and end time
             stringstream string_stream(s);  // creating string stream object
             int i = 0;
@@ -188,7 +161,7 @@ public:
         sort(startAndEndReport.begin(), startAndEndReport.end());
         vector<pair<int, int>>::iterator itReport = startAndEndReport.begin();
         vector<pair<int, int>>::iterator itAnomaly = startAndEndAnomaly.begin();
-        // go over all reports
+        // go over all anomalies
         while (itAnomaly != startAndEndAnomaly.end()) {
             // if we finished going over reports not over anomalies
             if (itReport == startAndEndReport.end()) {
