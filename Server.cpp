@@ -27,27 +27,22 @@ Server::Server(int port)throw (const char*) {
     }
 }
 
-void alarmSignal(int numAlarm){
-    cout<<"time-out"<<endl;
-    exit(numAlarm);
-}
-
 void Server::start(ClientHandler& ch)throw(const char*){
-    t=new thread([&ch,this](){
-        signal(SIGALRM, alarmSignal);
-        while(available){
-            socklen_t cSocketSize=sizeof(clientSock);
-            alarm(1);
-            int currentAcceptedClientID = accept(fileDescriptor, (struct sockaddr*)&clientSock, &cSocketSize);
-            if(currentAcceptedClientID > 0){
-                ch.handle(currentAcceptedClientID);
-                close(currentAcceptedClientID);
-            }
-            alarm(0);
-
-        }
-        close(fileDescriptor);
-    });
+    t = new thread(
+            // new lambda expression to run in thread
+            [&ch,this](){
+                while(available) {
+                    socklen_t cSocketSize = sizeof(clientSock);
+                    // get client id by accepting connection
+                    int currentAcceptedClientID = accept(fileDescriptor, (sockaddr*)&clientSock, &cSocketSize);
+                    // if accept succeeded
+                    if(currentAcceptedClientID > 0){
+                        ch.handle(currentAcceptedClientID);
+                        close(currentAcceptedClientID);
+                    }
+                }
+                close(fileDescriptor);
+            });
 }
 
 void Server::stop(){
@@ -77,11 +72,11 @@ void socketIO::write(string text) {
 }
 
 void socketIO::write(float f) {
-    ostringstream stringStream;
+    stringstream stringStream;
     // put float into string stream
     stringStream << f;
     // convert what is in the string stream into string str
-    string str(stringStream.str());
+    string str = stringStream.str();
     write(str);
 }
 

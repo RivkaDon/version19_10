@@ -7,7 +7,6 @@
 #include <thread>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "signal.h"
 #include <iostream>
 #include <unistd.h>
 
@@ -47,6 +46,8 @@ public:
 	virtual ~Server();
 	void start(ClientHandler& ch)throw(const char*);
 	void stop();
+
+    void helper(ClientHandler &ch);
 };
 
 #endif /* SERVER_H_ */
